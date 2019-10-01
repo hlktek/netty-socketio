@@ -45,7 +45,7 @@ public enum PacketType {
                 return type;
             }
         }
-        throw new IllegalStateException();
+        throw new IllegalStateException("Not found packet type: " + value);
     }
 
     public static PacketType valueOfInner(int value) {

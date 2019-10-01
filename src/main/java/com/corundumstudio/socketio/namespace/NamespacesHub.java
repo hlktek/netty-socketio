@@ -39,7 +39,7 @@ public class NamespacesHub {
     public Namespace create(String name) {
         Namespace namespace = (Namespace) namespaces.get(name);
         if (namespace == null) {
-            namespace = new Namespace(name, configuration);
+            namespace = new Namespace(name, configuration, this);
             Namespace oldNamespace = (Namespace) namespaces.putIfAbsent(name, namespace);
             if (oldNamespace != null) {
                 namespace = oldNamespace;

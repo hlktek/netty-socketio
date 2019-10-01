@@ -159,7 +159,7 @@ public class AckManager implements Disconnectable {
                     cb.onTimeout();
                 }
             }
-        }, callback.getTimeout(), TimeUnit.SECONDS);
+        }, callback.getTimeout(), TimeUnit.MILLISECONDS);
     }
 
     @Override

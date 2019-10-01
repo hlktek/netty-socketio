@@ -68,16 +68,7 @@ public class InPacketHandler extends SimpleChannelInboundHandler<PacketsMessage>
                 }
                 Namespace ns = namespacesHub.get(packet.getNsp());
                 if (ns == null) {
-                    if (packet.getSubType() == PacketType.CONNECT) {
-                        Packet p = new Packet(PacketType.MESSAGE);
-                        p.setSubType(PacketType.ERROR);
-                        p.setNsp(packet.getNsp());
-                        p.setData("Invalid namespace");
-                        client.send(p);
-                        return;
-                    }
-                    log.debug("Can't find namespace for endpoint: {}, sessionId: {} probably it was removed.", packet.getNsp(), client.getSessionId());
-                    return;
+                	ns = namespacesHub.create(packet.getNsp());
                 }
 
                 if (packet.getSubType() == PacketType.CONNECT) {
@@ -90,6 +81,8 @@ public class InPacketHandler extends SimpleChannelInboundHandler<PacketsMessage>
                     return;
                 }
                 packetListener.onPacket(packet, nClient, message.getTransport());
+            } catch (IllegalStateException ex) {
+            	log.error("Error during data processing packet. Client sessionId: " + client.getSessionId(), ex);
             } catch (Exception ex) {
                 String c = content.toString(CharsetUtil.UTF_8);
                 log.error("Error during data processing. Client sessionId: " + client.getSessionId() + ", data: " + c, ex);

@@ -34,7 +34,13 @@ import com.corundumstudio.socketio.MultiTypeArgs;
 import com.corundumstudio.socketio.SocketIOClient;
 import com.corundumstudio.socketio.SocketIONamespace;
 import com.corundumstudio.socketio.annotation.ScannerEngine;
-import com.corundumstudio.socketio.listener.*;
+import com.corundumstudio.socketio.listener.ConnectListener;
+import com.corundumstudio.socketio.listener.DataListener;
+import com.corundumstudio.socketio.listener.DisconnectListener;
+import com.corundumstudio.socketio.listener.EventInterceptor;
+import com.corundumstudio.socketio.listener.ExceptionListener;
+import com.corundumstudio.socketio.listener.MultiTypeEventListener;
+import com.corundumstudio.socketio.listener.PingListener;
 import com.corundumstudio.socketio.protocol.JsonSupport;
 import com.corundumstudio.socketio.protocol.Packet;
 import com.corundumstudio.socketio.store.StoreFactory;
@@ -70,14 +76,18 @@ public class Namespace implements SocketIONamespace {
     private final JsonSupport jsonSupport;
     private final StoreFactory storeFactory;
     private final ExceptionListener exceptionListener;
+    
+    private final NamespacesHub namespacesHub;
 
-    public Namespace(String name, Configuration configuration) {
+    public Namespace(String name, Configuration configuration, NamespacesHub namespacesHub) {
         super();
         this.name = name;
         this.jsonSupport = configuration.getJsonSupport();
         this.storeFactory = configuration.getStoreFactory();
         this.exceptionListener = configuration.getExceptionListener();
         this.ackMode = configuration.getAckMode();
+        
+        this.namespacesHub = namespacesHub;
     }
 
     public void addClient(SocketIOClient client) {
@@ -202,9 +212,16 @@ public class Namespace implements SocketIONamespace {
         } catch (Exception e) {
             exceptionListener.onDisconnectException(e, client);
         }
+        
+        
+        // remove this namespace from namespacesHub when there is no connection to this namespace.
+        // this action no apply to Default Namespace.
+        if (allClients.isEmpty() && !this.name.isEmpty()) {
+        	this.namespacesHub.remove(this.name);
+        }
     }
 
-    @Override
+    @Override 
     public void addConnectListener(ConnectListener listener) {
         connectListeners.add(listener);
     }
