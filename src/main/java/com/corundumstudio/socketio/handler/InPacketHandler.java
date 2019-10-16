@@ -81,8 +81,9 @@ public class InPacketHandler extends SimpleChannelInboundHandler<PacketsMessage>
                     return;
                 }
                 packetListener.onPacket(packet, nClient, message.getTransport());
-            } catch (IllegalStateException ex) {
-            	log.error("Error during data processing packet. Client sessionId: " + client.getSessionId(), ex);
+            } catch (IllegalStateException | IllegalArgumentException ex) {
+            	log.error("Error during data processing packet. Client sessionId: {}. Message: {}" ,client.getSessionId(), ex.getMessage());
+            	break;
             } catch (Exception ex) {
                 String c = content.toString(CharsetUtil.UTF_8);
                 log.error("Error during data processing. Client sessionId: " + client.getSessionId() + ", data: " + c, ex);
