@@ -22,6 +22,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.UUID;
 
 import com.corundumstudio.socketio.misc.IterableCollection;
 import com.corundumstudio.socketio.namespace.Namespace;
@@ -121,6 +122,27 @@ public class BroadcastOperations implements ClientOperations {
             client.sendEvent(name, ackCallback.createClientCallback(client), data);
         }
         ackCallback.loopFinished();
+    }
+    
+    /**
+     * TODO remove later.
+     * v2 : response
+     * v3 : p
+     * 
+     * @param <T>
+     * @param name
+     * @param data
+     * @param socketVerion
+     * @param ackCallback
+     */
+    public <T> void sendEvent(String name, Object data, Map<UUID, String> socketVerion, BroadcastAckCallback<T> ackCallback) {
+    	for (SocketIOClient client : clients) {
+    		if (!"v3".equals(socketVerion.get(client.getSessionId())) && "p".equals(name)) {
+    			name = "response";
+    		}
+    		client.sendEvent(name, ackCallback.createClientCallback(client), data);
+    	}
+    	ackCallback.loopFinished();
     }
     
     public <T> void sendEvent(String name, Object data, SocketIOClient excludedClient, BroadcastAckCallback<T> ackCallback) {
