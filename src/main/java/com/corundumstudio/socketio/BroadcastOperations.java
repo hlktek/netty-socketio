@@ -124,27 +124,6 @@ public class BroadcastOperations implements ClientOperations {
         ackCallback.loopFinished();
     }
     
-    /**
-     * TODO remove later.
-     * v2 : response
-     * v3 : p
-     * 
-     * @param <T>
-     * @param name
-     * @param data
-     * @param socketVerion
-     * @param ackCallback
-     */
-    public <T> void sendEvent(String name, Object data, Map<UUID, String> socketVerion, BroadcastAckCallback<T> ackCallback) {
-    	for (SocketIOClient client : clients) {
-    		if (!"v3".equals(socketVerion.get(client.getSessionId())) && "p".equals(name)) {
-    			name = "response";
-    		}
-    		client.sendEvent(name, ackCallback.createClientCallback(client), data);
-    	}
-    	ackCallback.loopFinished();
-    }
-    
     public <T> void sendEvent(String name, Object data, SocketIOClient excludedClient, BroadcastAckCallback<T> ackCallback) {
         for (SocketIOClient client : clients) {
             if (client.getSessionId().equals(excludedClient.getSessionId())) {
