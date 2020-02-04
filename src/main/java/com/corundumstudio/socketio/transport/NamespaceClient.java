@@ -83,8 +83,9 @@ public class NamespaceClient implements SocketIOClient {
         packet.setData(Arrays.asList(data));
         send(packet, ackCallback);
     }
-
-    private boolean isConnected() {
+    
+    @Override
+    public boolean isConnected() {
         return !disconnected.get() && baseClient.isConnected();
     }
 

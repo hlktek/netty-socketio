@@ -109,4 +109,6 @@ public interface SocketIOClient extends ClientOperations, Store {
      */
     Set<String> getAllRooms();
 
+	boolean isConnected();
+
 }
