@@ -20,6 +20,7 @@ import io.netty.channel.ChannelHandler.Sharable;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.util.CharsetUtil;
+import io.netty.util.ReferenceCountUtil;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -81,8 +82,9 @@ public class InPacketHandler extends SimpleChannelInboundHandler<PacketsMessage>
                     return;
                 }
                 packetListener.onPacket(packet, nClient, message.getTransport());
+                ReferenceCountUtil.release(content);
             } catch (IllegalStateException | IllegalArgumentException ex) {
-            	log.error("Error during data processing packet. Client sessionId: {}. Message: {}" ,client.getSessionId(), ex.getMessage());
+//            	log.error("Error during data processing packet. Client sessionId: {}. Message: {}" ,client.getSessionId(), ex.getMessage());
             	break;
             } catch (Exception ex) {
                 String c = content.toString(CharsetUtil.UTF_8);
